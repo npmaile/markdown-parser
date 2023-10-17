@@ -29,7 +29,7 @@ int main() {
     if (feof(fp)) {
       break;
     }
-
+    printf("%c", c);
   } while (1);
   fclose(fp);
   return (0);
