@@ -23,10 +23,13 @@ void printmdTextWithIndent(mdtext *input, int indent) {
   }
 }
 
-void printmdText(mdtext *input){
-	printmdTextWithIndent(input, 0);
-}
+void printmdText(mdtext *input) { printmdTextWithIndent(input, 0); }
 
+mdtext **stack;
+void parse(char c) {
+  static int arrindex;
+  mdtext *current = stack[arrindex];
+}
 
 int main() {
   FILE *fp;
@@ -36,16 +39,15 @@ int main() {
     perror("Error opening file");
     return (-1);
   }
-  mdtext ret;
   do {
     c = fgetc(fp);
     if (feof(fp)) {
       break;
     }
-    printf("%c", c);
+    parse(c);
   } while (1);
   fclose(fp);
-  printmdText(&ret);
+  printmdText(stack[0]);
   return (0);
 }
 
