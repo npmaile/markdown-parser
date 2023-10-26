@@ -28,8 +28,59 @@ void printmdText(mdtext *input) { printmdTextWithIndent(input, 0); }
 mdtext **stack;
 void parse(char c) {
   static int arrindex;
-  mdtext *current = stack[arrindex];
+  switch (stack[arrindex]->attribute) {
+  case MDtext: {
+  }
+  case MDbold: {
+  }
+  case MDitalic: {
+  }
+  case MDmonospace: {
+  }
+  case MDh1: {
+  }
+  case MDh2: {
+  }
+  case MDh3: {
+  }
+  }
+  putchar(c);
+  // mdtext *current = stack[arrindex];
 }
+
+// # heading 1
+// ## heading 2
+// ### heading 3
+// #### heading 4
+// ##### heading 5
+// ###### heading 6
+// ** bold **
+// __ bold __
+// * italic *
+// _italic_
+// ***bold and italic***
+// ___bold and italic___
+// > blockquote
+// >> nested blockquote
+// 1. list item
+// 1. list item also
+// 	1. indented list item
+// - unordered list
+// + unordered list
+// * unordered list
+// 	 - nested unordered list
+// 	 * nested unordered list
+// 	 + nested unordered list
+// `code`
+// ```long code```
+// --- horizontal line
+// *** horizontal line
+// ___ horizontal line
+// [link title](https://link.location.tld)
+// [link title](https://link.location.tld "extra title for link ")
+// <https://rawlink.location.tld>
+// ![Image title](/some/path)
+// [![ImageTitle](/some/image/path)](https://some.link.with.an.image)
 
 int main() {
   FILE *fp;
@@ -39,6 +90,7 @@ int main() {
     perror("Error opening file");
     return (-1);
   }
+  stack = malloc(sizeof(mdtext));
   do {
     c = fgetc(fp);
     if (feof(fp)) {
