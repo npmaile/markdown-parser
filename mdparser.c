@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <strings.h>
 
 enum mdAttr { MDtext, MDbold, MDitalic, MDmonospace, MDh1, MDh2, MDh3 };
@@ -11,6 +12,19 @@ typedef struct mdtext {
   enum mdAttr attribute;
   struct mdtext **inner;
 } mdtext;
+
+mdtext *newMDText(char input[], enum mdAttr type) {
+  mdtext *current = malloc(sizeof(struct mdtext));
+  int i = 0;
+  for (; input[i] != '\0'; i++) {
+    // we are just using this for counting.
+  }
+  current->text = malloc(sizeof(char) * i);
+  memcpy(current->text, input, i);
+  current->textlen = i;
+  current->attribute = type;
+  return current;
+}
 
 void printmdTextWithIndent(mdtext *input, int indent);
 void pintmdText(mdtext *input);
@@ -25,30 +39,43 @@ void printmdTextWithIndent(mdtext *input, int indent) {
 
 void printmdText(mdtext *input) { printmdTextWithIndent(input, 0); }
 
-mdtext **stack;
-void parse(char c) {
-  static int arrindex;
-  switch (stack[arrindex]->attribute) {
-  case MDtext: {
+mdtext *stack;
+int stackindex;
+
+void processLine(char line[]) {
+  static int stackindex;
+  mdtext current = stack[stackindex];
+  int i = 0;
+  for (char currentChar = line[0]; line[i] != '\0'; i++) {
+    switch (currentChar) {
+    case '#': {
+      mdtext *newNode = newMDText(line, MDh1);
+      stack[stackindex].innerlen += 1;
+      stack[stackindex].inner = realloc(
+          &stack[stackindex], stack[stackindex].innerlen * sizeof(mdtext *));
+    }
+    }
   }
-  case MDbold: {
+  printf("%s\n", line);
+}
+
+void slurp(char c) {
+  static char line[500];
+  static size_t lineIndex = 0;
+  switch (c) {
+  case '\n':
+    line[lineIndex] = '\0';
+    processLine(line);
+    lineIndex = 0;
+    break;
+  default:
+    line[lineIndex++] = c;
+    break;
   }
-  case MDitalic: {
-  }
-  case MDmonospace: {
-  }
-  case MDh1: {
-  }
-  case MDh2: {
-  }
-  case MDh3: {
-  }
-  }
-  putchar(c);
-  // mdtext *current = stack[arrindex];
 }
 
 // # heading 1
+
 // ## heading 2
 // ### heading 3
 // #### heading 4
@@ -90,16 +117,17 @@ int main() {
     perror("Error opening file");
     return (-1);
   }
-  stack = malloc(sizeof(mdtext));
+  stack = newMDText("", MDtext);
+  stackindex = 0;
   do {
     c = fgetc(fp);
     if (feof(fp)) {
       break;
     }
-    parse(c);
+    slurp(c);
   } while (1);
   fclose(fp);
-  printmdText(stack[0]);
+  // printmdText(stack[0]);
   return (0);
 }
 
