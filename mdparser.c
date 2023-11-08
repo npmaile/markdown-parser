@@ -42,30 +42,62 @@ void printmdText(mdtext *input) { printmdTextWithIndent(input, 0); }
 mdtext *stack;
 int stackindex;
 
-void processLine(char line[]) {
-  static int stackindex;
+void processLine(char line[500]) {
+  printf("line 46\n");
   mdtext current = stack[stackindex];
   int i = 0;
   for (char currentChar = line[0]; line[i] != '\0'; i++) {
     switch (currentChar) {
+      // heading
     case '#': {
       mdtext *newNode = newMDText(line, MDh1);
       stack[stackindex].innerlen += 1;
       stack[stackindex].inner = realloc(
-          &stack[stackindex], stack[stackindex].innerlen * sizeof(mdtext *));
+          &stack[stackindex],
+          stack[stackindex].innerlen * sizeof(mdtext *) + sizeof(mdtext));
+      stackindex += 1;
+      stack[stackindex] = *newNode;
+      stack[stackindex].attribute = MDbold;
+      stack[stackindex].text = malloc(sizeof(char) * 500);
+      stack[stackindex].text = memcpy(stack[stackindex].text, line, 500);
+      stack[stackindex].textlen = 1000; // todo: actually get the text length
+      stackindex -= 1;
+      break;
+    }
+    default: {
+      printf("sdklfjioscv38sd89132\n");
+      mdtext *newNode = newMDText(line, MDh1);
+      printf("sdf89ewnxcv8923f89\n");
+      stack[stackindex].innerlen += 1;
+      printf("wo893nscv893\n");
+      stack[stackindex].inner = realloc(
+          &stack[stackindex],
+          stack[stackindex].innerlen * sizeof(mdtext *) + sizeof(mdtext));
+      printf("sdf8932we89xcv\n\n\n\n\n\n\n\n\n");
+      stackindex += 1;
+      printf("skjdfkosdoxcn8w3e\n\n\n");
+      stack[stackindex].attribute = MDtext;
+      stack[stackindex].text = line;
+      printf("892w3nxcv983\n");
+      stack[stackindex].textlen = 1000; // todo: actually get the text length
+      stackindex -= 1;
     }
     }
   }
-  printf("%s\n", line);
+  printf("79\n");
 }
 
 void slurp(char c) {
+  printf("current line %d\n", 83);
   static char line[500];
   static size_t lineIndex = 0;
   switch (c) {
   case '\n':
+    printf("sdjfklsj\n");
     line[lineIndex] = '\0';
+    printf("before processline\n");
     processLine(line);
+    printf("after processline\n");
     lineIndex = 0;
     break;
   default:
@@ -73,7 +105,6 @@ void slurp(char c) {
     break;
   }
 }
-
 // # heading 1
 
 // ## heading 2
@@ -110,6 +141,7 @@ void slurp(char c) {
 // [![ImageTitle](/some/image/path)](https://some.link.with.an.image)
 
 int main() {
+  printf("line 133\n");
   FILE *fp;
   fp = fopen("testfile.md", "r");
   int c;
@@ -124,6 +156,7 @@ int main() {
     if (feof(fp)) {
       break;
     }
+    printf("line 148\n");
     slurp(c);
   } while (1);
   fclose(fp);
